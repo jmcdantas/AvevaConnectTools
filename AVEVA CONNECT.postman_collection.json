@@ -1,0 +1,792 @@
+{
+	"info": {
+		"_postman_id": "c8077043-1d71-415b-84c6-73ab2c876969",
+		"name": "AVEVA CONNECT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43186064"
+	},
+	"item": [
+		{
+			"name": "Step 1 - Authentication",
+			"item": [
+				{
+					"name": "Step 1.0 Get Authentication Endpoint",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"TokenURL\",pm.response.json()[\"token_endpoint\"])"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/identity/.well-known/openid-configuration",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"identity",
+								".well-known",
+								"openid-configuration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 1.1 Get Bearer Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"AccessToken\",pm.response.json()[\"access_token\"])"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{ClientID}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{ClientSecret}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{TokenURL}}",
+							"host": [
+								"{{TokenURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 1.2 Verify Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AccessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Step 2 - Configure Data Type",
+			"item": [
+				{
+					"name": "Step 2.0 List Types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Types",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2.0 List Types - Filtered",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Types",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2.1 Create Type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Id\": \"{{TypeID}}\",\r\n    \"Name\": \"{{TypeID}}\",\r\n    \"Description\": \"\",\r\n    \"SdsTypeCode\": 1,\r\n    \"Properties\": [\r\n        {\r\n            \"Id\": \"Value\",\r\n            \"Name\": \"Value\",\r\n            \"SdsType\": {\r\n                \"SdsTypeCode\": 9\r\n            }\r\n        },\r\n        {\r\n            \"Id\": \"Timestamp\",\r\n            \"Name\": \"Timestamp\",\r\n            \"IsKey\": true,\r\n            \"SdsType\": {\r\n                \"SdsTypeCode\": 16\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Types/{{TypeID}}",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Types",
+								"{{TypeID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2.1 Get Type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Types/{{TypeID}}",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Types",
+								"{{TypeID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2.3 Delete Type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Id\": \"Integer\",\r\n    \"Name\": \"Integer\",\r\n    \"Description\": \"\",\r\n    \"SdsTypeCode\": 1,\r\n    \"Properties\": [\r\n        {\r\n            \"Id\": \"Value\",\r\n            \"Name\": \"Value\",\r\n            \"SdsType\": {\r\n                \"SdsTypeCode\": 9\r\n            }\r\n        },\r\n        {\r\n            \"Id\": \"Timestamp\",\r\n            \"Name\": \"Timestamp\",\r\n            \"SdsType\": {\r\n                \"SdsTypeCode\": 16\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Types/{{TypeID}}",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Types",
+								"{{TypeID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{AccessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Step 3 - Configure Data Stream",
+			"item": [
+				{
+					"name": "Step 2.0 List Streams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2.0 List Streams - Filtered",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams?query={{StreamID}}",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "{{StreamID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2.1 Create Specific Stream",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AccessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Id\": \"{{StreamID}}\",\r\n    \"Name\": \"{{StreamID}}\",\r\n    \"Description\": \"\",\r\n    \"TypeId\": \"{{TypeID}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams/{{StreamID}}",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams",
+								"{{StreamID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2.2 Get Specific Stream",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams/{{StreamID}}",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams",
+								"{{StreamID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2.2 Get Specific Stream - Resolved",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams/{{StreamID}}/Resolved",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams",
+								"{{StreamID}}",
+								"Resolved"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2.3 Delete Specific Stream",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AccessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams/{{StreamID}}",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams",
+								"{{StreamID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{AccessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Step 4 - Send Data",
+			"item": [
+				{
+					"name": "Step 4.0 Insert Values",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"var lodash = require('lodash');\r",
+									"var timestamp = moment().format(\"YYYY-MM-DDTHH:mm:ss\");\r",
+									"var data = lodash.random(0, 100);\r",
+									"\r",
+									"pm.variables.set(\"sendtime\",timestamp);\r",
+									"pm.variables.set(\"senddata\",data);\r",
+									"\r",
+									"//console.log(timestamp);\r",
+									"//console.log(data);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"Timestamp\": \"{{sendtime}}\",\r\n    \"Value\": {{senddata}}\r\n  }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams/{{StreamID}}/Data",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams",
+								"{{StreamID}}",
+								"Data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 4.1 Get First Value",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams/{{StreamID}}/Data/First",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams",
+								"{{StreamID}}",
+								"Data",
+								"First"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 4.2 Get Last Value",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams/{{StreamID}}/Data/Last",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams",
+								"{{StreamID}}",
+								"Data",
+								"Last"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Step 4.3 List Last 10 Values",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"var timestamp = moment().format(\"YYYY-MM-DDTHH:mm:ss\");\r",
+									"pm.variables.set(\"querytime\",timestamp);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{Resource}}/api/{{ApiVersion}}/Tenants/{{TenantID}}/Namespaces/{{NameSpaceID}}/Streams/{{StreamID}}/Data?startIndex={{querytime}}&count=10&reversed=1",
+							"protocol": "https",
+							"host": [
+								"{{Resource}}"
+							],
+							"path": [
+								"api",
+								"{{ApiVersion}}",
+								"Tenants",
+								"{{TenantID}}",
+								"Namespaces",
+								"{{NameSpaceID}}",
+								"Streams",
+								"{{StreamID}}",
+								"Data"
+							],
+							"query": [
+								{
+									"key": "startIndex",
+									"value": "{{querytime}}"
+								},
+								{
+									"key": "count",
+									"value": "10"
+								},
+								{
+									"key": "reversed",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{AccessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Resource",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "TenantID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "NameSpaceID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ClientID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ClientSecret",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ApiVersion",
+			"value": "v1",
+			"type": "string"
+		},
+		{
+			"key": "TokenURL",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "AccessToken",
+			"value": ""
+		},
+		{
+			"key": "StreamID",
+			"value": "TestTag",
+			"type": "default"
+		},
+		{
+			"key": "TypeID",
+			"value": "Integer",
+			"type": "default"
+		}
+	]
+}
